@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace csharp
 {
@@ -14,6 +15,8 @@ namespace csharp
         {
             for (var i = 0; i < Items.Count; i++)
             {
+                if (IsLegendary(i)) continue;
+
                 if (ShouldIncreaseQualityOfItem(i))
                 {
                     IncreaseQualityOfItem(i);
@@ -59,6 +62,8 @@ namespace csharp
             }
         }
 
+        private bool IsConjured(int i) => Items[i].Name == "Conjured Mana Cake";
+
         private bool IsABackstagePass(int i) => Items[i].Name == "Backstage passes to a TAFKAL80ETC concert";
 
         private bool ShouldIncreaseQualityOfItem(int i) => Items[i].Name == "Aged Brie" || Items[i].Name == "Backstage passes to a TAFKAL80ETC concert";
@@ -83,10 +88,15 @@ namespace csharp
 
         private void ReduceQualityOfItem(int i)
         {
-            if (Items[i].Quality > 0 && !IsLegendary(i))
-            {
+            if (IsLegendary(i))
+                return;
+
+            Items[i].Quality = Items[i].Quality - 1;
+            
+            if (IsConjured(i))
                 Items[i].Quality = Items[i].Quality - 1;
-            }
+
+            if (Items[i].Quality < 0) Items[i].Quality = 0;
         }
     }
 }
