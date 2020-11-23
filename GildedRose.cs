@@ -13,90 +13,83 @@ namespace csharp
 
         public void UpdateQuality()
         {
-            for (var i = 0; i < Items.Count; i++)
+            foreach (var item in Items)
             {
-                if (IsLegendary(i)) continue;
+                if (IsLegendary(item)) 
+                    continue;
 
-                if (ShouldIncreaseQualityOfItem(i))
+                DecreaseSellInOfItem(item);
+
+                if (IsABackstagePass(item))
                 {
-                    IncreaseQualityOfItem(i);
-
-                    if (IsABackstagePass(i))
+                    if (item.SellIn < 0)
                     {
-                        if (Items[i].SellIn < 11)
-                        {
-                            IncreaseQualityOfItem(i);
-                        }
-
-                        if (Items[i].SellIn < 6)
-                        {
-                            IncreaseQualityOfItem(i);
-                        }
+                        item.Quality = 0;
+                        continue;
                     }
-                }
-                else
-                {
-                    ReduceQualityOfItem(i);
-                }
 
-                DecreaseSellInOfItem(i);
+                    IncreaseQualityOfItem(item);
 
-                if (Items[i].SellIn >= 0)
-                {
+                    if (item.SellIn < 10)
+                        IncreaseQualityOfItem(item);
+
+                    if (item.SellIn < 5)
+                        IncreaseQualityOfItem(item);
+
                     continue;
                 }
 
-                if (Items[i].Name == "Aged Brie")
+                if (IsAgedBrie(item))
                 {
-                    IncreaseQualityOfItem(i);
+                    IncreaseQualityOfItem(item);
+
+                    if (item.SellIn >= 0)
+                        continue;
+
+                    IncreaseQualityOfItem(item);
+
                     continue;
                 }
+                
+                ReduceQualityOfItem(item);
 
-                if (IsABackstagePass(i))
-                {
-                    Items[i].Quality = Items[i].Quality - Items[i].Quality;
+                if (item.SellIn >= 0)
                     continue;
-                }
 
-                ReduceQualityOfItem(i);
+                ReduceQualityOfItem(item);
             }
         }
 
-        private bool IsConjured(int i) => Items[i].Name == "Conjured Mana Cake";
+        private bool IsConjured(Item item) => item.Name.StartsWith("Conjured");
 
-        private bool IsABackstagePass(int i) => Items[i].Name == "Backstage passes to a TAFKAL80ETC concert";
+        private bool IsABackstagePass(Item item) => item.Name.StartsWith("Backstage passes");
 
-        private bool ShouldIncreaseQualityOfItem(int i) => Items[i].Name == "Aged Brie" || Items[i].Name == "Backstage passes to a TAFKAL80ETC concert";
+        private bool IsAgedBrie(Item item) => item.Name == "Aged Brie";
 
-        private bool IsLegendary(int i) => Items[i].Name == "Sulfuras, Hand of Ragnaros";
+        private bool IsLegendary(Item item) => item.Name == "Sulfuras, Hand of Ragnaros";
 
-        private void IncreaseQualityOfItem(int i)
+        private void IncreaseQualityOfItem(Item item)
         {
-            if (Items[i].Quality < 50)
-            {
-                Items[i].Quality = Items[i].Quality + 1;
-            }
+            item.Quality += 1;
+
+            if (item.Quality > 50)
+                item.Quality = 50;
         }
 
-        private void DecreaseSellInOfItem(int i)
+        private void DecreaseSellInOfItem(Item item)
         {
-            if (!IsLegendary(i))
-            {
-                Items[i].SellIn = Items[i].SellIn - 1;
-            }
+            item.SellIn -= 1;
         }
 
-        private void ReduceQualityOfItem(int i)
+        private void ReduceQualityOfItem(Item item)
         {
-            if (IsLegendary(i))
-                return;
-
-            Items[i].Quality = Items[i].Quality - 1;
+            item.Quality -= 1;
             
-            if (IsConjured(i))
-                Items[i].Quality = Items[i].Quality - 1;
+            if (IsConjured(item))
+                item.Quality -= 1;
 
-            if (Items[i].Quality < 0) Items[i].Quality = 0;
+            if (item.Quality < 0) 
+                item.Quality = 0;
         }
     }
 }
