@@ -125,5 +125,23 @@ namespace csharp
             app.UpdateQuality();
             Assert.AreEqual("Aged Brie, -1, 50", Items[0].ToString());
         }
+
+        [Test]
+        public void Conjured_Items_Decrease_Quality_Twice()
+        {
+            IList<Item> Items = new List<Item> { new Item { Name = "Conjured Mana Cake", SellIn = 3, Quality = 6 } };
+            GildedRose app = new GildedRose(Items);
+            app.UpdateQuality();
+            Assert.AreEqual("Conjured Mana Cake, 2, 4", Items[0].ToString());
+        }
+
+        [Test]
+        public void When_SellIn_0_Conjured_Items_Decrease_Quality_Four_Times()
+        {
+            IList<Item> Items = new List<Item> { new Item { Name = "Conjured Mana Cake", SellIn = 0, Quality = 6 } };
+            GildedRose app = new GildedRose(Items);
+            app.UpdateQuality();
+            Assert.AreEqual("Conjured Mana Cake, -1, 2", Items[0].ToString());
+        }
     }
 }
